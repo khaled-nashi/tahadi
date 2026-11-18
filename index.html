@@ -233,7 +233,7 @@ function openStart(week){
   $("stName").textContent=(S.practice?"تدريب – التحدي ":"التحدي ")+(ORD[week-1]||AR(week))+(S.practice?"":" (هذا الأسبوع)");
   $("stFocus").textContent=m.f;
   const gw=d.g==="g3"?"ثالث":"سادس";$("inCls").innerHTML='<option value="">— اختر —</option>'+[1,2].map(n=>`<option>${gw} ${AR(n)}</option>`).join("");
-  const me=store.get("me",{});$("inName").value=me.name||"";$("inCls").value=me.cls||"";if($("inCls").value!==me.cls)$("inCls").value="";chkGo();
+  $("inName").value="";$("inCls").value="";chkGo();
   const a=$("arch");a.innerHTML="";
   for(let w=1;w<=WEEK;w++){const b=document.createElement("button");b.className=w===week?"cur":"";const best=store.get("best_"+S.key+"_"+w,null);
     b.innerHTML="التحدي "+AR(w)+(best!==null?` <span class="st">★${AR(best)}</span>`:"");b.onclick=()=>openStart(w);a.appendChild(b)}
@@ -242,7 +242,7 @@ function openStart(week){
 }
 function chkGo(){$("goBtn").disabled=$("inName").value.trim().length<2||!$("inCls").value}
 $("inName").oninput=chkGo;$("inCls").onchange=chkGo;
-$("goBtn").onclick=()=>{S.name=$("inName").value.trim().slice(0,40);S.cls=$("inCls").value;store.set("me",{name:S.name,cls:S.cls});startQuiz()};
+$("goBtn").onclick=()=>{S.name=$("inName").value.trim().slice(0,40);S.cls=$("inCls").value;startQuiz()};
 function startQuiz(){
   const m=D[S.key].models[S.mi];S.i=0;S.ans=[];S.t0=Date.now();
   clearInterval(S.tick);S.tick=setInterval(()=>{$("timer").textContent=mmss(Date.now()-S.t0)},500);
