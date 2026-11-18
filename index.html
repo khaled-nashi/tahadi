@@ -214,7 +214,11 @@ const WEEK=Math.max(1,OPEN_WEEK|0);
    ينتهي كل تحدٍّ يوم السبت الساعة ١١:٥٩ مساءً: التحدي الأول السبت ٢١/١١، والثاني بعده بأسبوع، وهكذا.
    لتغيير موعد التحدي الحالي فقط اكتب التاريخ هنا بهذا الشكل: "2026-11-28"، واتركه "" للموعد التلقائي. */
 const CLOSE_OVERRIDE = "";
-const CLOSE_AT=CLOSE_OVERRIDE?new Date(CLOSE_OVERRIDE+"T23:59:59+03:00"):new Date(new Date("2026-11-21T23:59:59+03:00").getTime()+(WEEK-1)*7*864e5);
+// أسابيع الإجازات: اكتب تاريخ سبت كل أسبوع إجازة، فيتخطاه التحدي (إجازة ٢٢–٢٨/١١ مضافة).
+const BREAKS = ["2026-11-28"];
+function autoClose(w){let d=new Date("2026-11-21T23:59:59+03:00"),n=1;const iso=x=>new Date(x.getTime()+3*36e5).toISOString().slice(0,10);
+  while(n<w){d=new Date(d.getTime()+7*864e5);if(!BREAKS.includes(iso(d)))n++;}return d}
+const CLOSE_AT=CLOSE_OVERRIDE?new Date(CLOSE_OVERRIDE+"T23:59:59+03:00"):autoClose(WEEK);
 const CLOSED=Date.now()>CLOSE_AT.getTime();
 const DAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
 const closeTxt=()=>{const r=new Date(CLOSE_AT.getTime()+3*36e5);return DAYS[r.getUTCDay()]+" "+AR(r.getUTCDate())+"/"+AR(r.getUTCMonth()+1)};
