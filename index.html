@@ -147,6 +147,7 @@ footer{text-align:center;color:var(--muted);font-size:.85rem;margin-top:30px;lin
         <div><label for="inCls">فصلك</label><select id="inCls"></select></div>
       </div>
       <div class="btns"><button class="btn" id="goBtn" disabled>ابدأ التحدي ←</button></div>
+      <div class="note" id="stClose" style="font-weight:700;color:#9A5D0B"></div>
       <div class="note">١٠ أسئلة. بعد كل إجابة تعرف هل هي صحيحة. يُحسب الوقت للترتيب عند تساوي الدرجات.</div>
     </div>
     <h2>تحديات سابقة للتدريب</h2>
@@ -209,7 +210,15 @@ const ICON={math:["c1","＋"],read:["c2","أ"],sci:["c3","⚗"]};
 const $=id=>document.getElementById(id);
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 const WEEK=Math.max(1,OPEN_WEEK|0);
-$("wkNum").textContent=AR(WEEK);$("wkRange").textContent="مفتوح الآن";
+/* ===== موعد انتهاء التحدي =====
+   ينتهي كل تحدٍّ يوم السبت الساعة ١١:٥٩ مساءً: التحدي الأول السبت ٢١/١١، والثاني بعده بأسبوع، وهكذا.
+   لتغيير موعد التحدي الحالي فقط اكتب التاريخ هنا بهذا الشكل: "2026-11-28"، واتركه "" للموعد التلقائي. */
+const CLOSE_OVERRIDE = "";
+const CLOSE_AT=CLOSE_OVERRIDE?new Date(CLOSE_OVERRIDE+"T23:59:59+03:00"):new Date(new Date("2026-11-21T23:59:59+03:00").getTime()+(WEEK-1)*7*864e5);
+const CLOSED=Date.now()>CLOSE_AT.getTime();
+const DAYS=["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"];
+const closeTxt=()=>{const r=new Date(CLOSE_AT.getTime()+3*36e5);return DAYS[r.getUTCDay()]+" "+AR(r.getUTCDate())+"/"+AR(r.getUTCMonth()+1)};
+$("wkNum").textContent=AR(WEEK);$("wkRange").textContent=CLOSED?"انتهى":"حتى "+closeTxt();
 const modelFor=(key,week)=>(week-1)%D[key].models.length;
 
 let S={g:null,key:null,mi:null,week:WEEK,practice:false,i:0,ans:[],t0:0,tick:null,name:"",cls:""};
@@ -227,10 +236,11 @@ function renderSubj(){
     b.onclick=()=>{S.key=k;openStart(WEEK)};g.appendChild(b)});
 }
 function openStart(week){
-  S.week=week;S.practice=week!==WEEK;S.mi=modelFor(S.key,week);const d=D[S.key],m=d.models[S.mi];
+  S.week=week;S.practice=week!==WEEK||CLOSED;S.mi=modelFor(S.key,week);const d=D[S.key],m=d.models[S.mi];
   $("startTitle").textContent=d.name+" – الصف "+(d.g==="g3"?"الثالث":"السادس");
   $("stBadge").textContent=AR(week);
   $("stName").textContent=(S.practice?"تدريب – التحدي ":"التحدي ")+(ORD[week-1]||AR(week))+(S.practice?"":" (هذا الأسبوع)");
+  $("stClose").textContent=week===WEEK?(CLOSED?"⏰ انتهى وقت تحدي هذا الأسبوع. يمكنك التدرب عليه، وانتظر التحدي القادم.":"⏰ ينتهي التحدي يوم "+closeTxt()+" الساعة ١١:٥٩ مساءً."):"";
   $("stFocus").textContent=m.f;
   const gw=d.g==="g3"?"ثالث":"سادس";$("inCls").innerHTML='<option value="">— اختر —</option>'+[1,2].map(n=>`<option>${gw} ${AR(n)}</option>`).join("");
   $("inName").value="";$("inCls").value="";chkGo();
