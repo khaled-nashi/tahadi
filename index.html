@@ -195,7 +195,7 @@ const D={"g3_math": {"g": "g3", "s": "math", "name": "الرياضيات", "teac
 // نموذج Google لجمع النتائج: ضع رابط النموذج ومعرّفات الحقول (entry) بعد إنشائه
 // رقم واتساب المنسق بالصيغة الدولية بدون + (مثال: 9665XXXXXXXX). إذا تُرك فارغًا يختار الطالب جهة الإرسال.
 const PHONE="";
-const FORM={url:"",f:{name:"",cls:"",grade:"",subj:"",week:"",score:"",time:"",ans:"",code:"",kind:""}};
+const FORM={url:"https://docs.google.com/forms/d/e/1FAIpQLSeL-g1yYQkd8j9Me-Ql0fJwiyvJg4YQ_9f8JR73sBVucz2RvA/viewform",f:{name:"739774830",cls:"1664100554",grade:"518687301",subj:"506700032",week:"1560059915",score:"1801262277",time:"1778086472",ans:"1585763790",code:"1764745848",kind:"75969561"}};
 
 /* ===== التحدي المفتوح =====
    غيّر الرقم أدناه كل أسبوع لفتح التحدي التالي للطلاب (١ = النموذج الأول، ٢ = النموذج الثاني ...).
@@ -310,9 +310,9 @@ $("homeBtn").onclick=()=>{renderSubj();show("vGrade")};
 function sendResult(r){
   const st=$("sendSt");
   if(!FORM.url){st.textContent="";return}
-  try{const fd=new FormData();Object.entries(FORM.f).forEach(([k,id])=>{if(id)fd.append("entry."+id,r[k])});
+  try{const fd=new URLSearchParams();Object.entries(FORM.f).forEach(([k,id])=>{if(id)fd.append("entry."+id,String(r[k]))});
     st.textContent="جارٍ إرسال نتيجتك…";
-    fetch(FORM.url.replace(/\/viewform.*$/,"/formResponse"),{method:"POST",mode:"no-cors",body:fd}).then(()=>{st.textContent="✓ وصلت نتيجتك للمعلم"},()=>{st.textContent="تعذّر الإرسال التلقائي، استعمل زر الواتساب"});
+    fetch(FORM.url.replace(/\/viewform.*$/,"/formResponse"),{method:"POST",mode:"no-cors",body:fd}).then(()=>{st.textContent="✓ تم حفظ نتيجتك"},()=>{st.textContent="تعذّر الإرسال التلقائي، استعمل زر الواتساب"});
   }catch(e){st.textContent="تعذّر الإرسال التلقائي، استعمل زر الواتساب"}
 }
 function toast(t){const e=$("toast");e.textContent=t;e.classList.add("on");setTimeout(()=>e.classList.remove("on"),1800)}
